@@ -13,7 +13,7 @@ const port = 3000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(whitelistMiddleware); // Apply whitelistMiddleware globally
+//app.use(whitelistMiddleware); // Apply whitelistMiddleware globally
 
 // MongoDB Connection
 const DB_CONN_STRING = process.env.DB_CONN_STRING || '';
@@ -51,7 +51,7 @@ mongoose.connect(DB_CONN_STRING)
 
 
 // Routes
-app.post('/', async (req, res) => {
+app.post('/', whitelistMiddleware, async (req, res) => {
   try {
     // The whitelistMiddleware will run before reaching this route handler
     const userData = req.body;
@@ -64,10 +64,11 @@ app.post('/', async (req, res) => {
 });
 
 
-app.get('/:email', async (req, res) => {
+app.get('/:email',whitelistMiddleware, async (req, res) => {
   try {
     // The whitelistMiddleware will run before reaching this route handler
     const email = req.params.email;
+    console.log('Get request Received email:', email);
     const user = await User.findOne({ email });
     
     if (!user) {
